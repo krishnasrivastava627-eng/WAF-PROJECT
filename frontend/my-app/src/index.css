@@ -1,0 +1,242 @@
+/* Reset */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* App Layout */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.sidebar button {
+  margin-top: 20px;
+  padding: 10px;
+  border: none;
+  background: #34495e;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+/* Content Layout */
+.content {
+  flex: 1;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: #f4f6f9;
+}
+
+/* Main Content */
+.main-content {
+  flex: 3;
+}
+
+/* Right Panel */
+.right-panel {
+  flex: 1;
+  max-width: 320px;
+  min-width: 260px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  border-left: 1px solid #1f2937;
+  padding-left: 15px;
+}
+
+/* Heading */
+h1 {
+  margin-bottom: 20px;
+}
+
+/* Cards */
+.cards {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.card {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Card colors */
+.total { background: #3498db; }
+.blocked { background: #e74c3c; }
+.allowed { background: #2ecc71; }
+.attacks { background: #f39c12; }
+
+/* Table */
+.table-container {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+}
+
+th {
+  background: #2c3e50;
+  color: white;
+  padding: 10px;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+tr:hover {
+  background: #f1f1f1;
+}
+
+/* Attack colors */
+.danger {
+  color: #ff4c4c;
+  font-weight: bold;
+}
+
+.warning {
+  color: #ffa500;
+  font-weight: bold;
+}
+
+.critical {
+  color: red;
+  font-weight: bold;
+}
+
+/* Attack Distribution Box */
+.attack-box {
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 12px;
+  color: #e5e7eb;
+}
+
+.attack-box h2 {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+/* Attack items */
+.attack-item {
+  margin-bottom: 18px;
+}
+
+.attack-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #1f2937;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #ef4444, #b91c1c);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+/* 🌙 DARK MODE */
+.dark .content {
+  background: #121212;
+  color: #e0e0e0;
+}
+
+.dark .sidebar {
+  background: #0f172a;
+}
+
+.dark .card {
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.dark .table-container {
+  background: #2c2c2c;
+}
+
+.dark table {
+  color: #ddd;
+}
+
+.dark th {
+  background: #1f2937;
+}
+
+.dark td {
+  border-bottom: 1px solid #555;
+}
+
+.dark tr:hover {
+  background: #333;
+}
+
+.dark .attack-box {
+  background: #0f172a;
+  border: 1px solid #1f2937;
+}
+
+/* 📱 Responsive */
+@media (max-width: 900px) {
+  .content {
+    flex-direction: column;
+  }
+
+  .cards {
+    flex-direction: column;
+  }
+
+ 
+}

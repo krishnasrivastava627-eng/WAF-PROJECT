@@ -2,6 +2,21 @@
 const rule = require('../models/Rule');
 const { detectAttack } = require("../utils/ruleEngine");
 const { aiCheck } = require("../utils/aiEngine");
+exports.getStats = (req, res) => {
+  res.json({
+    total: 120,
+    blocked: 30,
+    allowed: 90,
+    attacks: 30
+  });
+};
+
+exports.getLogs = (req, res) => {
+  res.json([
+    { ip: "192.168.1.1", attack: "SQL Injection", time: "10:30" },
+    { ip: "10.0.0.2", attack: "XSS", time: "10:32" }
+  ]);
+};
 
 // 🔥 Check Request (Main WAF Logic)
 exports.checkRequest = async (req, res) => {

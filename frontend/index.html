@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WAF Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🛡️ SUDARSHAN</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>Logs</li>
+      <li>Analytics</li>
+    </ul>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="main-content">
+
+      <h1>Security Dashboard</h1>
+
+      <!-- Cards -->
+      <div class="cards" id="cards"></div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <h2>Recent Attacks</h2>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Attack</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Attack Distribution -->
+      <div class="attack-box">
+        <h2>ATTACK DISTRIBUTION</h2>
+        <div id="attackBox"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { checkRequest, getLogs } = require("../controllers/wafControllers");
+// import functions
+const { getStats, getLogs } = require("../controllers/wafControllers");
 
-// route for checking input
-router.post("/check", checkRequest);
-
-// route for getting logs
+// routes
+router.get("/stats", getStats);
 router.get("/logs", getLogs);
 
 module.exports = router;

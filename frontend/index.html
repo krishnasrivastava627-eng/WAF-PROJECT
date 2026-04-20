@@ -11,11 +11,11 @@
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2>🛡️ SUDARSHAN</h2>
+    <h2>🛡️ WAF</h2>
     <ul>
-      <li>Dashboard</li>
-      <li>Logs</li>
-      <li>Analytics</li>
+      <li onclick="scrollToSection('dashboard')">Dashboard</li>
+      <li onclick="scrollToSection('logs')">Logs</li>
+      <li onclick="scrollToSection('analytics')">Analytics</li>
     </ul>
   </div>
 
@@ -23,34 +23,50 @@
   <div class="content">
     <div class="main-content">
 
-      <h1>Security Dashboard</h1>
-
-      <!-- Cards -->
+      <!-- Dashboard -->
+      <h1 id="dashboard">Security Dashboard</h1>
+      <h3 id="status"></h3>
+      <p id="lastUpdated"></p>
       <div class="cards" id="cards"></div>
 
-      <!-- Table -->
-      <div class="table-container">
+      <!-- Logs -->
+      <div class="table-container" id="logs">
         <h2>Recent Attacks</h2>
 
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>IP</th>
-                <th>Attack</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-          </table>
+        <div class="filter-box">
+          <label>Filter:</label>
+          <select id="filter">
+            <option value="ALL">All</option>
+            <option value="SQL Injection">SQL Injection</option>
+            <option value="XSS">XSS</option>
+            <option value="Brute Force">Brute Force</option>
+          </select>
         </div>
+
+        <p>Total Logs: <span id="logCount"></span></p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>Attack</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
       </div>
 
-      <!-- Attack Distribution -->
-      <div class="attack-box">
+      <!-- Analytics -->
+      <div class="attack-box" id="analytics">
         <h2>ATTACK DISTRIBUTION</h2>
+        <h3 id="topAttack"></h3>
         <div id="attackBox"></div>
       </div>
+
+      <footer>
+        <p>WAF Dashboard • Simple Project</p>
+      </footer>
 
     </div>
   </div>

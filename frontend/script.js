@@ -1,78 +1,126 @@
-// Stats
-const stats = {
-  total: 120,
-  blocked: 30,
-  allowed: 90,
-  attacks: 30
-};
+const BASE_URL = "http://localhost:3000/api";
 
-// Logs
-const logs = [
-  { ip: "192.168.1.1", attack: "SQL Injection", time: "10:30" },
-  { ip: "10.0.0.2", attack: "XSS", time: "10:32" },
-  { ip: "172.16.0.5", attack: "Brute Force", time: "10:35" }
-];
+// Scroll navigation
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({
+    behavior: "smooth"
+  });
+}
 
-// Attack Distribution
-const attackDistribution = [
-  { type: "SQL_INJECTION", count: 12847 },
-  { type: "XSS_ATTACK", count: 8923 },
-  { type: "PATH_TRAVERSAL", count: 6241 },
-  { type: "DDOS_FLOOD", count: 5102 },
-  { type: "BOT_SCRAPING", count: 4089 }
-];
+// Load dashboard data
+async function loadDashboard() {
+  try {
+    const [statsRes, logsRes, attacksRes] = await Promise.all([
+      fetch(`${BASE_URL}/stats`),
+      fetch(`${BASE_URL}/logs`),
+      fetch(`${BASE_URL}/attacks`)
+    ]);
 
-// Render Cards
-const cardsDiv = document.getElementById("cards");
-cardsDiv.innerHTML = `
-  <div class="card total">Total ${stats.total}</div>
-  <div class="card blocked">Blocked ${stats.blocked}</div>
-  <div class="card allowed">Allowed ${stats.allowed}</div>
-  <div class="card attacks">Attacks ${stats.attacks}</div>
-`;
+    const stats = await statsRes.json();
+    const logs = await logsRes.json();
+    const attackDistribution = await attacksRes.json();
 
-// Render Table
-const tableBody = document.getElementById("tableBody");
+    // Status
+    const status = stats.attacks > 20 ? "⚠️ Under Attack" : "✅ System Safe";
+    document.getElementById("status").innerText = status;
 
-logs.forEach(log => {
-  const row = document.createElement("tr");
+    // Time
+    document.getElementById("lastUpdated").innerText =
+      "Last Updated: " + new Date().toLocaleString();
 
-  const attackClass =
-    log.attack === "SQL Injection"
-      ? "danger"
-      : log.attack === "XSS"
-      ? "warning"
-      : "";
+    // Cards
+    document.getElementById("cards").innerHTML = `
+      <div class="card total">Total ${stats.total}</div>
+      <div class="card blocked">Blocked ${stats.blocked}</div>
+      <div class="card allowed">Allowed ${stats.allowed}</div>
+      <div class="card attacks">Attacks ${stats.attacks}</div>
+    `;
 
-  row.innerHTML = `
-    <td>${log.ip}</td>
-    <td class="${attackClass}">${log.attack}</td>
-    <td>${log.time}</td>
-  `;
+    // Logs
+    document.getElementById("logCount").innerText = logs.length;
+    renderLogs(logs);
 
-  tableBody.appendChild(row);
-});
+    // Filter
+    document.getElementById("filter").addEventListener("change", (e) => {
+      const value = e.target.value;
+      const filtered =
+        value === "ALL"
+          ? logs
+          : logs.filter(log => log.attack === value);
+
+      renderLogs(filtered);
+    });
+
+    // Top Attack
+    const topAttack = attackDistribution.reduce((a, b) =>
+      a.count > b.count ? a : b
+    );
+
+    document.getElementById("topAttack").innerText =
+      "🔥 Most Frequent Attack: " + topAttack.type;
+
+    // Attack Distribution
+    renderAttackDistribution(attackDistribution);
+
+  } catch (err) {
+    console.error("Error:", err);
+  }
+}
+
+// Render Logs
+function renderLogs(data) {
+  const tableBody = document.getElementById("tableBody");
+  tableBody.innerHTML = "";
+
+  data.slice(0, 3).forEach(log => {   // only latest 3 logs
+    const row = document.createElement("tr");
+
+    const attackClass =
+      log.attack === "SQL Injection"
+        ? "danger"
+        : log.attack === "XSS"
+        ? "warning"
+        : "";
+
+    row.innerHTML = `
+      <td>${log.ip}</td>
+      <td class="${attackClass}">${log.attack}</td>
+      <td>${log.time}</td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
 
 // Render Attack Distribution
-const attackBox = document.getElementById("attackBox");
+function renderAttackDistribution(data) {
+  const attackBox = document.getElementById("attackBox");
+  attackBox.innerHTML = "";
 
-const maxCount = Math.max(...attackDistribution.map(a => a.count));
+  const max = Math.max(...data.map(a => a.count));
 
-attackDistribution.forEach(a => {
-  const percent = (a.count / maxCount) * 100;
+  data.forEach(a => {
+    const percent = (a.count / max) * 100;
 
-  const div = document.createElement("div");
-  div.className = "attack-item";
+    const div = document.createElement("div");
+    div.className = "attack-item";
 
-  div.innerHTML = `
-    <div class="attack-header">
-      <span>${a.type}</span>
-      <span>${a.count.toLocaleString()}</span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width:${percent}%"></div>
-    </div>
-  `;
+    div.innerHTML = `
+      <div class="attack-header">
+        <span>${a.type}</span>
+        <span>${a.count.toLocaleString()}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
+    `;
 
-  attackBox.appendChild(div);
-});
+    attackBox.appendChild(div);
+  });
+}
+
+// Initial load
+loadDashboard();
+
+// Auto refresh (optional)
+setInterval(loadDashboard, 5000);

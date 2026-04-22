@@ -10,19 +10,18 @@ exports.getStats = async (req, res) => {
 
     const total = logs.length;
 
-    const blocked = logs.filter(log => log.status === "Blocked").length;
+    const blocked = logs.filter((log) => log.status === "Blocked").length;
 
-    const allowed = logs.filter(log => log.status === "Allowed").length;
+    const allowed = logs.filter((log) => log.status === "Allowed").length;
 
-    const attacks = logs.filter(log => log.attackType !== "None").length;
+    const attacks = logs.filter((log) => log.attackType !== "None").length;
 
     res.json({
       total,
       blocked,
       allowed,
-      attacks
+      attacks,
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -32,14 +31,20 @@ exports.getLogs = async (req, res) => {
   try {
     const logs = await Log.find().sort({ createdAt: -1 });
 
-    const formatted = logs.map(log => ({
+    const formatted = logs.map((log) => ({
       ip: log.ip || "Unknown",
       attack: log.attackType || "None",
-      time: new Date(log.createdAt).toLocaleTimeString()
+      time: new Date(log.createdAt).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
     }));
 
     res.json(formatted);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -53,18 +58,17 @@ exports.getAttacks = async (req, res) => {
 
     const map = {};
 
-    logs.forEach(log => {
+    logs.forEach((log) => {
       const type = log.attackType || "UNKNOWN";
       map[type] = (map[type] || 0) + 1;
     });
 
-    const result = Object.keys(map).map(key => ({
+    const result = Object.keys(map).map((key) => ({
       type: key,
-      count: map[key]
+      count: map[key],
     }));
 
     res.json(result);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -81,7 +85,7 @@ exports.checkRequest = async (req, res) => {
       return res.json({
         status: "Blocked",
         reason: "Empty input",
-        attackType: "Invalid"
+        attackType: "Invalid",
       });
     }
 
@@ -96,8 +100,7 @@ exports.checkRequest = async (req, res) => {
       status = "Blocked";
       reason = ruleResult.reason;
       attackType = ruleResult.type;
-    } 
-    else {
+    } else {
       // 🧠 AI-based detection
       const aiResult = aiCheck(input);
 
@@ -119,12 +122,11 @@ exports.checkRequest = async (req, res) => {
       ip: req.ip,
       attackType,
       status,
-      reason
+      reason,
     });
 
     // 📤 Send response
     res.json({ status, reason, attackType });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

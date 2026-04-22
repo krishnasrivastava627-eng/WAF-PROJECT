@@ -72,15 +72,19 @@ function renderLogs(data) {
   const tableBody = document.getElementById("tableBody");
   tableBody.innerHTML = "";
 
-  data.slice(0, 3).forEach(log => {   // only latest 3 logs
+  data.forEach(log => {   // only latest 3 logs
     const row = document.createElement("tr");
 
-    const attackClass =
-      log.attack === "SQL Injection"
-        ? "danger"
-        : log.attack === "XSS"
-        ? "warning"
-        : "";
+   const attackClass =
+  log.attack === "SQL Injection"
+    ? "danger"
+    : log.attack === "XSS"
+    ? "warning"
+    : log.attack === "Anomaly"
+    ? "critical"
+    : log.attack === "None"
+    ? "safe"
+    : "";
 
     row.innerHTML = `
       <td>${log.ip}</td>

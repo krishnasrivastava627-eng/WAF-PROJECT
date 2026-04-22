@@ -80,6 +80,9 @@ tr:hover {
 
 .danger { color: #ff4c4c; }
 .warning { color: #ffa500; }
+.critical { color: #f6ecec; }
+
+.safe {color: #2ecc71;}
 
 /* Attack Box */
 .attack-box {

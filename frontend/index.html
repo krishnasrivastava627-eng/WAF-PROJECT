@@ -35,15 +35,7 @@
       <div class="table-container" id="logs">
         <h2>Recent Attacks</h2>
 
-        <div class="filter-box">
-          <label>Filter:</label>
-          <select id="filter">
-            <option value="ALL">All</option>
-            <option value="SQL Injection">SQL Injection</option>
-            <option value="XSS">XSS</option>
-            <option value="Brute Force">Brute Force</option>
-          </select>
-        </div>
+       
 
         <p>Total Logs: <span id="logCount"></span></p>
 
@@ -57,6 +49,7 @@
           </thead>
           <tbody id="tableBody"></tbody>
         </table>
+        <button id="showMoreBtn">Show More</button>
       </div>
 
       <!-- ANALYTICS -->

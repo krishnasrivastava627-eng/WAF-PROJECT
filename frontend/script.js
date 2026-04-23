@@ -1,3 +1,4 @@
+let showAll = false;
 const BASE_URL = "http://localhost:3000/api";
 
 // Scroll navigation
@@ -40,16 +41,7 @@ async function loadDashboard() {
     document.getElementById("logCount").innerText = logs.length;
     renderLogs(logs);
 
-    // Filter
-    document.getElementById("filter").addEventListener("change", (e) => {
-      const value = e.target.value;
-      const filtered =
-        value === "ALL"
-          ? logs
-          : logs.filter(log => log.attack === value);
-
-      renderLogs(filtered);
-    });
+    
 
     // Top Attack
     const topAttack = attackDistribution.reduce((a, b) =>
@@ -72,19 +64,22 @@ function renderLogs(data) {
   const tableBody = document.getElementById("tableBody");
   tableBody.innerHTML = "";
 
-  data.forEach(log => {   // only latest 3 logs
+  // 👇 Decide how many logs to show
+  const logsToShow = showAll ? data : data.slice(0, 10);
+
+  logsToShow.forEach(log => {
     const row = document.createElement("tr");
 
-   const attackClass =
-  log.attack === "SQL Injection"
-    ? "danger"
-    : log.attack === "XSS"
-    ? "warning"
-    : log.attack === "Anomaly"
-    ? "critical"
-    : log.attack === "None"
-    ? "safe"
-    : "";
+    const attackClass =
+      log.attack === "SQL Injection"
+        ? "danger"
+        : log.attack === "XSS"
+        ? "warning"
+        : log.attack === "Anomaly"
+        ? "critical"
+        : log.attack === "None"
+        ? "safe"
+        : "";
 
     row.innerHTML = `
       <td>${log.ip}</td>
@@ -94,8 +89,15 @@ function renderLogs(data) {
 
     tableBody.appendChild(row);
   });
-}
 
+  // Update button text
+  document.getElementById("showMoreBtn").innerText =
+    showAll ? "Show Less" : "Show More";
+}
+document.getElementById("showMoreBtn").addEventListener("click", () => {
+  showAll = !showAll;
+  loadDashboard(); // re-render
+});
 // Render Attack Distribution
 function renderAttackDistribution(data) {
   const attackBox = document.getElementById("attackBox");
@@ -126,5 +128,5 @@ function renderAttackDistribution(data) {
 // Initial load
 loadDashboard();
 
-// Auto refresh (optional)
-setInterval(loadDashboard, 5000);
+
+setInterval(loadDashboard, 0);

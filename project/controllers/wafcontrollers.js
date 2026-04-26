@@ -1,8 +1,7 @@
-const Log = require("../models/Log");
+const Log = require("../models/log");
 const Rule = require("../models/Rule");
 const { detectAttack } = require("../utils/ruleEngine");
 const { aiCheck } = require("../utils/aiEngine");
-
 
 // 📊 Stats API
 exports.getStats = async (req, res) => {

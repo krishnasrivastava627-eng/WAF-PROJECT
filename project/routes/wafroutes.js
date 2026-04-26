@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // import functions
-const { getStats, getLogs, getAttacks, checkRequest } = require("../controllers/wafControllers");
+const { getStats, getLogs, getAttacks, checkRequest } = require("../controllers/wafcontrollers");
 
 // routes
 router.get("/stats", getStats);

@@ -198,8 +198,7 @@
 </div>
 
 <script>
-const BASE_URL = "/api"; // ✅ important fix
-
+const BASE_URL = "/api"; 
 function scrollToSection(id) {
   document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
@@ -309,7 +308,7 @@ function renderAttackDistribution(data) {
 
 // Load + auto refresh
 loadDashboard();
-setInterval(loadDashboard, 5000);
+
 </script>
 
 </body>

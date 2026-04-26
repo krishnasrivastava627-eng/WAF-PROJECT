@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WAF Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+    }
+
+    .app {
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #0f172a;
+      padding: 20px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar li {
+      padding: 10px 0;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 20px;
+    }
+
+    /* Cards */
+    .cards {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .card {
+      flex: 1;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .total { background: #3498db; }
+    .blocked { background: #e74c3c; }
+    .allowed { background: #2ecc71; }
+    .attacks { background: #f39c12; }
+
+    /* Table */
+    .table-container {
+      background: #2c2c2c;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 40px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #1f2937;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #555;
+      text-align: center;
+    }
+
+    tr:hover {
+      background: #333;
+    }
+
+    .danger { color: #ff4c4c; }
+    .warning { color: #ffa500; }
+    .critical { color: #f6ecec; }
+    .safe { color: #2ecc71; }
+
+    /* Analytics */
+    .attack-box {
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 40px;
+    }
+
+    .attack-item {
+      margin-bottom: 18px;
+    }
+
+    .attack-header {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #1f2937;
+      border-radius: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #ef4444, #b91c1c);
+    }
+
+    footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🛡️ SUDARSHAN</h2>
+    <ul>
+      <li onclick="scrollToSection('dashboard')">Dashboard</li>
+      <li onclick="scrollToSection('logs')">Logs</li>
+      <li onclick="scrollToSection('analytics')">Analytics</li>
+    </ul>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="main-content">
+
+      <h2>Welcome <%= username %> 🎉</h2>
+      <a href="/logout">Logout</a>
+
+      <!-- DASHBOARD -->
+      <h1 id="dashboard">Security Dashboard</h1>
+      <h3 id="status"></h3>
+      <p id="lastUpdated"></p>
+
+      <div class="cards" id="cards"></div>
+
+      <!-- LOGS -->
+      <div class="table-container" id="logs">
+        <h2>Recent Attacks</h2>
+
+        <label>Filter:</label>
+        <select id="filter">
+          <option value="ALL">All</option>
+          <option value="SQL Injection">SQL Injection</option>
+          <option value="XSS">XSS</option>
+          <option value="Brute Force">Brute Force</option>
+        </select>
+
+        <p>Total Logs: <span id="logCount"></span></p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>Attack</th>
+              <th>Date & Time</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="attack-box" id="analytics">
+        <h2>ATTACK DISTRIBUTION</h2>
+        <h3 id="topAttack"></h3>
+        <div id="attackBox"></div>
+      </div>
+
+      <footer>
+        <p>SUDARSHAN • WAF</p>
+      </footer>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const BASE_URL = "/api"; // ✅ important fix
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+async function loadDashboard() {
+  try {
+    const [statsRes, logsRes, attacksRes] = await Promise.all([
+      fetch(`${BASE_URL}/stats`),
+      fetch(`${BASE_URL}/logs`),
+      fetch(`${BASE_URL}/attacks`)
+    ]);
+
+    const stats = await statsRes.json();
+    const logs = await logsRes.json();
+    const attackDistribution = await attacksRes.json();
+
+    // Status
+    document.getElementById("status").innerText =
+      stats.attacks > 20 ? "⚠️ Under Attack" : "✅ System Safe";
+
+    // Time
+    document.getElementById("lastUpdated").innerText =
+      "Last Updated: " + new Date().toLocaleString();
+
+    // Cards
+    document.getElementById("cards").innerHTML = `
+      <div class="card total">Total ${stats.total}</div>
+      <div class="card blocked">Blocked ${stats.blocked}</div>
+      <div class="card allowed">Allowed ${stats.allowed}</div>
+      <div class="card attacks">Attacks ${stats.attacks}</div>
+    `;
+
+    // Logs
+    document.getElementById("logCount").innerText = logs.length;
+    renderLogs(logs);
+
+    document.getElementById("filter").onchange = (e) => {
+      const value = e.target.value;
+      const filtered =
+        value === "ALL" ? logs : logs.filter(l => l.attack === value);
+      renderLogs(filtered);
+    };
+
+    // Top attack
+    const top = attackDistribution.reduce((a, b) =>
+      a.count > b.count ? a : b
+    );
+
+    document.getElementById("topAttack").innerText =
+      "🔥 Most Frequent Attack: " + top.type;
+
+    renderAttackDistribution(attackDistribution);
+
+  } catch (err) {
+    console.error("Dashboard Error:", err);
+  }
+}
+
+function renderLogs(data) {
+  const tableBody = document.getElementById("tableBody");
+  tableBody.innerHTML = "";
+
+  data.forEach(log => {
+    const row = document.createElement("tr");
+
+    const cls =
+      log.attack === "SQL Injection" ? "danger" :
+      log.attack === "XSS" ? "warning" :
+      log.attack === "Anomaly" ? "critical" :
+      log.attack === "None" ? "safe" : "";
+
+    row.innerHTML = `
+      <td>${log.ip}</td>
+      <td class="${cls}">${log.attack}</td>
+      <td>${log.time}</td>
+    `;
+
+    tableBody.appendChild(row);
+  });
+}
+
+function renderAttackDistribution(data) {
+  const box = document.getElementById("attackBox");
+  box.innerHTML = "";
+
+  const max = Math.max(...data.map(a => a.count));
+
+  data.forEach(a => {
+    const percent = (a.count / max) * 100;
+
+    const div = document.createElement("div");
+    div.className = "attack-item";
+
+    div.innerHTML = `
+      <div class="attack-header">
+        <span>${a.type}</span>
+        <span>${a.count}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
+    `;
+
+    box.appendChild(div);
+  });
+}
+
+// Load + auto refresh
+loadDashboard();
+setInterval(loadDashboard, 5000);
+</script>
+
+</body>
+</html>

@@ -2,24 +2,22 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const mongoose = require("mongoose");
-
 const app = express();
-
-// ✅ middleware
+// middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// ✅ test route
+// test route
 app.get("/test", (req, res) => {
-  res.send("Working ✅");
+  res.send("Working ");
 });
 
-// ✅ MongoDB connection
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected ✅"))
-  .catch(err => console.log("Mongo Error ❌", err));
+  .then(() => console.log("MongoDB Connected "))
+  .catch(err => console.log("Mongo Error ", err));
 
-// ✅ session
+// session
 app.use(
   session({
     secret: "mysecretKey",
@@ -28,17 +26,17 @@ app.use(
   })
 );
 
-// ✅ view engine
+// view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ✅ routes
+//routes
 const wafRoutes = require("./routes/wafroutes");
 console.log("WAF ROUTES LOADED");
 
 app.use("/api", wafRoutes);
 
-// ✅ auth routes
+//auth routes
 app.get("/", (req, res) => {
   res.render("login");
 });
@@ -68,7 +66,7 @@ app.get("/logout", (req, res) => {
   });
 });
 
-// ✅ ONLY ONE SERVER START
+//ONLY ONE SERVER START
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
